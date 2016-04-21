@@ -21,6 +21,8 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.github.nkzawa.socketio.client.Socket;
+
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
@@ -39,6 +41,7 @@ import it.mahd.taxi.util.Calculator;
 import it.mahd.taxi.util.Controllers;
 import it.mahd.taxi.util.Encrypt;
 import it.mahd.taxi.util.ServerRequest;
+import it.mahd.taxi.util.SocketIO;
 
 /**
  * Created by salem on 2/13/16.
@@ -47,6 +50,7 @@ public class BookAdvance extends Fragment {
     Calculator c = new Calculator();
     Controllers conf = new Controllers();
     ServerRequest sr = new ServerRequest();
+    Socket socket = SocketIO.getInstance();
 
     private TextView Latitude_txt, Longitude_txt,Date_txt, Time_txt;
     private FloatingActionButton Position_btn;
@@ -72,6 +76,7 @@ public class BookAdvance extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.bookadvance, container, false);
+        socket.connect();
         latitude = getArguments().getDouble(conf.tag_latitude);
         longitude = getArguments().getDouble(conf.tag_longitude);
 
@@ -239,6 +244,7 @@ public class BookAdvance extends Fragment {
             int hour = cal.get(Calendar.HOUR_OF_DAY);
             int minute = cal.get(Calendar.MINUTE);
             datetime = year + "/" + month + "/" + day + " " + hour + ":" + minute;
+            Toast.makeText(getActivity(),datetime + "",Toast.LENGTH_LONG).show();
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -266,7 +272,12 @@ public class BookAdvance extends Fragment {
             try{
                 String jsonstr = json.getString(conf.response);
                 Toast.makeText(getActivity(),jsonstr,Toast.LENGTH_LONG).show();
-                if(json.getBoolean(conf.res)){
+                if (json.getBoolean(conf.res)) {
+                    JSONObject jsonx = new JSONObject();
+                    try {
+                        jsonx.put(conf.tag_notify, true);
+                        socket.emit(conf.io_notify, jsonx);
+                    } catch (JSONException e) { }
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Home());
                     ft.addToBackStack(null);

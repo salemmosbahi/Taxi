@@ -112,7 +112,7 @@ public class BookNow extends Fragment implements LocationListener {
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 3;// The minimum distance to change Updates in meters // 3 meters
     private static final long MIN_TIME_BW_UPDATES = 1000 * 3 * 1;// The minimum time between updates in milliseconds // 3 seconds
     private TextView DistanceDuration_txt;
-    private FloatingActionButton Valid_btn;
+    private FloatingActionButton Stop_btn, DriverComeOut_btn;
 
     public BookNow() {}
 
@@ -130,6 +130,10 @@ public class BookNow extends Fragment implements LocationListener {
         ioPreBook = true;
         ioValid = false; ioPostBook = false; ioEndCourse = false;
         tokenOfDriver = "";
+
+        DriverComeOut_btn = (FloatingActionButton) v.findViewById(R.id.DriverComeOut_btn);
+        Stop_btn = (FloatingActionButton) v.findViewById(R.id.Stop_btn);
+
         socket.on(conf.io_searchTaxi, handleIncomingPreBook);//listen in taxi driver
         socket.on(conf.io_validBook, handleIncomingValidBook);//listen in driver valid book
         socket.on(conf.io_postBook, handleIncomingPostBook);
@@ -161,125 +165,79 @@ public class BookNow extends Fragment implements LocationListener {
         }
         cameraPosition = new CameraPosition.Builder().target(new LatLng(latitude, longitude)).zoom(15).build();
         googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        Valid_btn = (FloatingActionButton) v.findViewById(R.id.valid_btn);
-        Valid_btn.setOnClickListener(new View.OnClickListener() {
+
+        DriverComeOut_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DistanceDuration_txt.setText("");
+                googleMap.clear();
+                DriverComeOut_btn.setVisibility(View.GONE);
+                Stop_btn.setVisibility(View.GONE);
+
+                ioPreBook = true;
+                ioValid = false; ioPostBook = false; ioEndCourse = false;
+
+                if(conf.NetworkIsAvailable(getActivity())){ // disable account
+                    DisableAccount(tokenOfDriver);
+                    tokenOfDriver = "";
+                }else{
+                    Toast.makeText(getActivity(), R.string.networkunvalid, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        Stop_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 JSONObject jsonx = new JSONObject();
-                try{
-                    jsonx.put(conf.tag_validRoute, true);
+                try {
+                    jsonx.put(conf.tag_stopBook, true);
                     jsonx.put(conf.tag_tokenClient, pref.getString(conf.tag_token, ""));
-                    socket.emit(conf.io_validRoute, jsonx);
-                    ioEndCourse = true;
-                    Valid_btn.setVisibility(View.GONE);
-                }catch(JSONException e){ }
+                    socket.emit(conf.io_stopBook, jsonx);//not fixed
+                    tokenOfDriver = "";
+                    DistanceDuration_txt.setText("");
+                    googleMap.clear();
+                    DriverComeOut_btn.setVisibility(View.GONE);
+                    Stop_btn.setVisibility(View.GONE);
+
+                    ioPreBook = true;
+                    ioValid = false; ioPostBook = false; ioEndCourse = false;
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.container_body, new Home());
+                    ft.addToBackStack(null);
+                    ft.commit();
+                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
+                } catch (JSONException e) { }
             }
         });
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             public boolean onMarkerClick(Marker arg0) {
-                tokenOfDriver = arg0.getTitle();
-                //ptOfDriver = arg0.getPosition();
-                bookDialog = new Dialog(getActivity(), R.style.FullHeightDialog);
-                bookDialog.setContentView(R.layout.booknow_dialog);
-                bookDialog.setCancelable(true);
-                ImageView Picture_iv, Color_iv;
-                TextView Username_txt, Age_txt, Model_txt, Serial_txt, Places_txt, Luggages_txt;
-                RatingBar Point_rb;
-                Button Book_btn, Cancel_btn;
-                Picture_iv = (ImageView) bookDialog.findViewById(R.id.picture_iv);
-                Username_txt = (TextView) bookDialog.findViewById(R.id.username_txt);
-                Age_txt = (TextView) bookDialog.findViewById(R.id.age_txt);
-                Point_rb = (RatingBar) bookDialog.findViewById(R.id.pt_rb);
-                LayerDrawable stars = (LayerDrawable) Point_rb.getProgressDrawable();
-                Color_iv = (ImageView) bookDialog.findViewById(R.id.color_iv);
-                Model_txt = (TextView) bookDialog.findViewById(R.id.model_txt);
-                Serial_txt = (TextView) bookDialog.findViewById(R.id.serial_txt);
-                Places_txt = (TextView) bookDialog.findViewById(R.id.places_txt);
-                Luggages_txt = (TextView) bookDialog.findViewById(R.id.luggages_txt);
-                Book_btn = (Button) bookDialog.findViewById(R.id.book_btn);
-                Cancel_btn = (Button) bookDialog.findViewById(R.id.cancel_btn);
+                if (ioPreBook) {
+                    tokenOfDriver = arg0.getTitle();
+                    //ptOfDriver = arg0.getPosition();
+                    bookDialog = new Dialog(getActivity(), R.style.FullHeightDialog);
+                    bookDialog.setContentView(R.layout.booknow_dialog);
+                    bookDialog.setCancelable(true);
+                    ImageView Picture_iv, Color_iv;
+                    TextView Username_txt, Age_txt, Model_txt, Serial_txt, Places_txt, Luggages_txt;
+                    RatingBar Point_rb;
+                    Button Book_btn, Cancel_btn;
+                    Picture_iv = (ImageView) bookDialog.findViewById(R.id.picture_iv);
+                    Username_txt = (TextView) bookDialog.findViewById(R.id.username_txt);
+                    Age_txt = (TextView) bookDialog.findViewById(R.id.age_txt);
+                    Point_rb = (RatingBar) bookDialog.findViewById(R.id.pt_rb);
+                    LayerDrawable stars = (LayerDrawable) Point_rb.getProgressDrawable();
+                    Color_iv = (ImageView) bookDialog.findViewById(R.id.color_iv);
+                    Model_txt = (TextView) bookDialog.findViewById(R.id.model_txt);
+                    Serial_txt = (TextView) bookDialog.findViewById(R.id.serial_txt);
+                    Places_txt = (TextView) bookDialog.findViewById(R.id.places_txt);
+                    Luggages_txt = (TextView) bookDialog.findViewById(R.id.luggages_txt);
+                    Book_btn = (Button) bookDialog.findViewById(R.id.book_btn);
+                    Cancel_btn = (Button) bookDialog.findViewById(R.id.cancel_btn);
 
-                if (listPreTaxi.isEmpty()) {
-                    List<NameValuePair> params = new ArrayList<NameValuePair>();
-                    params.add(new BasicNameValuePair(conf.tag_token, tokenOfDriver));
-                    JSONObject json = sr.getJSON(conf.url_getDriver, params);
-                    if(json != null){
-                        try{
-                            if(json.getBoolean(conf.res)) {
-                                Encrypt algo = new Encrypt();
-                                int keyVirtual = Integer.parseInt(json.getString(conf.tag_key));
-                                String newKey = algo.key(keyVirtual);
-
-                                String picture = json.getString(conf.tag_picture);
-                                String color = algo.enc2dec(json.getString(conf.tag_color), newKey);
-                                usernameOfDriver = algo.enc2dec(json.getString(conf.tag_fname), newKey)
-                                        + " " + algo.enc2dec(json.getString(conf.tag_lname), newKey);
-                                int[] tab = new Calculator().getAge(algo.enc2dec(json.getString(conf.tag_dateN), newKey));
-                                String dateN = tab[0] + "years, " + tab[1] + "month, " + tab[2] + "day";
-                                Float pt = (5 * Float.parseFloat(algo.enc2dec(json.getString(conf.tag_pt), newKey))) / Float.parseFloat(algo.enc2dec(json.getString(conf.tag_ptt), newKey));
-                                String model = algo.enc2dec(json.getString(conf.tag_model), newKey);
-                                String serial = algo.enc2dec(json.getString(conf.tag_serial), newKey);
-                                String places = algo.enc2dec(json.getString(conf.tag_places), newKey) + " Places,";
-                                String luggages = algo.enc2dec(json.getString(conf.tag_luggages), newKey) + " Kg Luggages";
-                                Taxi tx = new Taxi(tokenOfDriver,picture,color,usernameOfDriver,dateN,pt,model,serial,places,luggages);
-                                listPreTaxi.add(tx);
-
-                                byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
-                                Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                                Username_txt.setTextColor(Color.parseColor(color));
-                                Username_txt.setText(usernameOfDriver);
-                                Age_txt.setTextColor(Color.parseColor(color));
-                                Age_txt.setText(dateN);
-                                stars.getDrawable(2).setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
-                                Point_rb.setRating(pt);
-                                Color_iv.setBackgroundColor(Color.parseColor(color));
-                                Model_txt.setTextColor(Color.parseColor(color));
-                                Model_txt.setText(model);
-                                Serial_txt.setTextColor(Color.parseColor(color));
-                                Serial_txt.setText(serial);
-                                Places_txt.setTextColor(Color.parseColor(color));
-                                Places_txt.setText(places);
-                                Luggages_txt.setTextColor(Color.parseColor(color));
-                                Luggages_txt.setText(luggages);
-                            }
-                        }catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), R.string.serverunvalid, Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    boolean tokenDriverExist = false;
-                    int positionDriver = 0;
-                    for (int i = 0; i<listPreTaxi.size(); i++) {
-                        if (tokenOfDriver.equals(listPreTaxi.get(i).getToken())) {
-                            tokenDriverExist = true;
-                            positionDriver = i;
-                            break;
-                        } else {
-                            tokenDriverExist = false;
-                        }
-                    }
-                    if (tokenDriverExist) {
-                        byte[] imageAsBytes = Base64.decode(listPreTaxi.get(positionDriver).getPicture().getBytes(), Base64.DEFAULT);
-                        Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                        Username_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Username_txt.setText(listPreTaxi.get(positionDriver).getUsername());
-                        Age_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Age_txt.setText(listPreTaxi.get(positionDriver).getDateN());
-                        stars.getDrawable(2).setColorFilter(Color.parseColor(listPreTaxi.get(positionDriver).getColor()), PorterDuff.Mode.SRC_ATOP);
-                        Point_rb.setRating(listPreTaxi.get(positionDriver).getPt());
-                        Color_iv.setBackgroundColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Model_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Model_txt.setText(listPreTaxi.get(positionDriver).getModel());
-                        Serial_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Serial_txt.setText(listPreTaxi.get(positionDriver).getSerial());
-                        Places_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Places_txt.setText(listPreTaxi.get(positionDriver).getPlaces());
-                        Luggages_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                        Luggages_txt.setText(listPreTaxi.get(positionDriver).getLuggages());
-                    } else {
+                    if (listPreTaxi.isEmpty()) {
                         List<NameValuePair> params = new ArrayList<NameValuePair>();
                         params.add(new BasicNameValuePair(conf.tag_token, tokenOfDriver));
                         JSONObject json = sr.getJSON(conf.url_getDriver, params);
@@ -328,33 +286,113 @@ public class BookNow extends Fragment implements LocationListener {
                         } else {
                             Toast.makeText(getActivity(), R.string.serverunvalid, Toast.LENGTH_SHORT).show();
                         }
-                    }
-                }
-                bookDialog.show();
-                Cancel_btn.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        bookDialog.dismiss();
-                    }
-                });
-                Book_btn.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        ioValid = true;
-                        ioPreBook = false;
-                        ioPostBook = false;
-                        JSONObject jsonx = new JSONObject();
-                        try {
-                            jsonx.put(conf.tag_latitude, latitude);
-                            jsonx.put(conf.tag_longitude, longitude);
-                            jsonx.put(conf.tag_tokenDriver, tokenOfDriver);
-                            jsonx.put(conf.tag_tokenClient, pref.getString(conf.tag_token, ""));
-                            jsonx.put(conf.tag_fname, pref.getString(conf.tag_fname, "") + " " + pref.getString(conf.tag_lname, ""));
-                            socket.emit(conf.io_preBook, jsonx);
-                        } catch (JSONException e) {
+                    } else {
+                        boolean tokenDriverExist = false;
+                        int positionDriver = 0;
+                        for (int i = 0; i<listPreTaxi.size(); i++) {
+                            if (tokenOfDriver.equals(listPreTaxi.get(i).getToken())) {
+                                tokenDriverExist = true;
+                                positionDriver = i;
+                                break;
+                            } else {
+                                tokenDriverExist = false;
+                            }
                         }
-                        bookDialog.dismiss();
-                        googleMap.clear();
+                        if (tokenDriverExist) {
+                            byte[] imageAsBytes = Base64.decode(listPreTaxi.get(positionDriver).getPicture().getBytes(), Base64.DEFAULT);
+                            Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                            Username_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Username_txt.setText(listPreTaxi.get(positionDriver).getUsername());
+                            Age_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Age_txt.setText(listPreTaxi.get(positionDriver).getDateN());
+                            stars.getDrawable(2).setColorFilter(Color.parseColor(listPreTaxi.get(positionDriver).getColor()), PorterDuff.Mode.SRC_ATOP);
+                            Point_rb.setRating(listPreTaxi.get(positionDriver).getPt());
+                            Color_iv.setBackgroundColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Model_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Model_txt.setText(listPreTaxi.get(positionDriver).getModel());
+                            Serial_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Serial_txt.setText(listPreTaxi.get(positionDriver).getSerial());
+                            Places_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Places_txt.setText(listPreTaxi.get(positionDriver).getPlaces());
+                            Luggages_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
+                            Luggages_txt.setText(listPreTaxi.get(positionDriver).getLuggages());
+                        } else {
+                            List<NameValuePair> params = new ArrayList<NameValuePair>();
+                            params.add(new BasicNameValuePair(conf.tag_token, tokenOfDriver));
+                            JSONObject json = sr.getJSON(conf.url_getDriver, params);
+                            if(json != null){
+                                try{
+                                    if(json.getBoolean(conf.res)) {
+                                        Encrypt algo = new Encrypt();
+                                        int keyVirtual = Integer.parseInt(json.getString(conf.tag_key));
+                                        String newKey = algo.key(keyVirtual);
+
+                                        String picture = json.getString(conf.tag_picture);
+                                        String color = algo.enc2dec(json.getString(conf.tag_color), newKey);
+                                        usernameOfDriver = algo.enc2dec(json.getString(conf.tag_fname), newKey)
+                                                + " " + algo.enc2dec(json.getString(conf.tag_lname), newKey);
+                                        int[] tab = new Calculator().getAge(algo.enc2dec(json.getString(conf.tag_dateN), newKey));
+                                        String dateN = tab[0] + "years, " + tab[1] + "month, " + tab[2] + "day";
+                                        Float pt = (5 * Float.parseFloat(algo.enc2dec(json.getString(conf.tag_pt), newKey))) / Float.parseFloat(algo.enc2dec(json.getString(conf.tag_ptt), newKey));
+                                        String model = algo.enc2dec(json.getString(conf.tag_model), newKey);
+                                        String serial = algo.enc2dec(json.getString(conf.tag_serial), newKey);
+                                        String places = algo.enc2dec(json.getString(conf.tag_places), newKey) + " Places,";
+                                        String luggages = algo.enc2dec(json.getString(conf.tag_luggages), newKey) + " Kg Luggages";
+                                        Taxi tx = new Taxi(tokenOfDriver,picture,color,usernameOfDriver,dateN,pt,model,serial,places,luggages);
+                                        listPreTaxi.add(tx);
+
+                                        byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
+                                        Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
+                                        Username_txt.setTextColor(Color.parseColor(color));
+                                        Username_txt.setText(usernameOfDriver);
+                                        Age_txt.setTextColor(Color.parseColor(color));
+                                        Age_txt.setText(dateN);
+                                        stars.getDrawable(2).setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
+                                        Point_rb.setRating(pt);
+                                        Color_iv.setBackgroundColor(Color.parseColor(color));
+                                        Model_txt.setTextColor(Color.parseColor(color));
+                                        Model_txt.setText(model);
+                                        Serial_txt.setTextColor(Color.parseColor(color));
+                                        Serial_txt.setText(serial);
+                                        Places_txt.setTextColor(Color.parseColor(color));
+                                        Places_txt.setText(places);
+                                        Luggages_txt.setTextColor(Color.parseColor(color));
+                                        Luggages_txt.setText(luggages);
+                                    }
+                                }catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Toast.makeText(getActivity(), R.string.serverunvalid, Toast.LENGTH_SHORT).show();
+                            }
+                        }
                     }
-                });
+                    bookDialog.show();
+                    Cancel_btn.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            bookDialog.dismiss();
+                        }
+                    });
+                    Book_btn.setOnClickListener(new View.OnClickListener() {
+                        public void onClick(View v) {
+                            ioValid = true;
+                            ioPreBook = false;
+                            ioPostBook = false;
+                            JSONObject jsonx = new JSONObject();
+                            try {
+                                jsonx.put(conf.tag_latitude, latitude);
+                                jsonx.put(conf.tag_longitude, longitude);
+                                jsonx.put(conf.tag_tokenDriver, tokenOfDriver);
+                                jsonx.put(conf.tag_tokenClient, pref.getString(conf.tag_token, ""));
+                                jsonx.put(conf.tag_fname, pref.getString(conf.tag_fname, "") + " " + pref.getString(conf.tag_lname, ""));
+                                socket.emit(conf.io_preBook, jsonx);
+                            } catch (JSONException e) {
+                            }
+                            bookDialog.dismiss();
+                            googleMap.clear();
+                        }
+                    });
+                }
                 return true;
             }
         });
@@ -478,7 +516,8 @@ public class BookNow extends Fragment implements LocationListener {
                             if (token.equals(tokenOfDriver)) {
                                 googleMap.clear();
                                 ioEndCourse = true;
-                                Valid_btn.setVisibility(View.VISIBLE);
+                                DriverComeOut_btn.setVisibility(View.GONE);
+                                Stop_btn.setVisibility(View.GONE);
                                 MarkerOptions options = new MarkerOptions();
                                 LatLng origin = new LatLng(origLat,origLon);
                                 LatLng dest = new LatLng(desLat,desLon);
@@ -550,6 +589,9 @@ public class BookNow extends Fragment implements LocationListener {
                             lon = data.getDouble(conf.tag_longitude);
                             token = data.getString(conf.tag_token);
                             if (token.equals(tokenOfDriver)) {
+                                DriverComeOut_btn.setVisibility(View.VISIBLE);
+                                Stop_btn.setVisibility(View.VISIBLE);
+                                ioPostBook = true;
                                 MarkerOptions options = new MarkerOptions();
                                 LatLng origin = new LatLng(lat,lon);
                                 LatLng dest = new LatLng(latitude,longitude);
@@ -562,7 +604,6 @@ public class BookNow extends Fragment implements LocationListener {
                                 String url = getDirectionsUrl(origin, dest);
                                 DownloadTask downloadTask = new DownloadTask();
                                 downloadTask.execute(url);
-                                ioPostBook = true;
                             }
                         } catch (JSONException e) { }
                     }
@@ -637,6 +678,27 @@ public class BookNow extends Fragment implements LocationListener {
             });
         }
     };
+
+    private void DisableAccount(String tokenD) {
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair(conf.tag_token, tokenD));
+        JSONObject json = sr.getJSON(conf.url_disableAccountBook, params);
+        if(json != null){
+            try {
+                if(json.getBoolean(conf.res)){
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.container_body, new Home());
+                    ft.addToBackStack(null);
+                    ft.commit();
+                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }else{
+            Toast.makeText(getActivity(),"App server is unavailable!",Toast.LENGTH_LONG).show();
+        }
+    }
 
     private String getDirectionsUrl(LatLng origin,LatLng dest){
         // Origin of route
