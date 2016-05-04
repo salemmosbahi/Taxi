@@ -21,6 +21,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -229,6 +230,9 @@ public class BookNow extends Fragment implements LocationListener {
                     Age_txt = (TextView) bookDialog.findViewById(R.id.age_txt);
                     Point_rb = (RatingBar) bookDialog.findViewById(R.id.pt_rb);
                     LayerDrawable stars = (LayerDrawable) Point_rb.getProgressDrawable();
+                    stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+                    stars.getDrawable(1).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
+                    stars.getDrawable(0).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
                     Color_iv = (ImageView) bookDialog.findViewById(R.id.color_iv);
                     Model_txt = (TextView) bookDialog.findViewById(R.id.model_txt);
                     Serial_txt = (TextView) bookDialog.findViewById(R.id.serial_txt);
@@ -264,20 +268,13 @@ public class BookNow extends Fragment implements LocationListener {
 
                                     byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
                                     Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                                    Username_txt.setTextColor(Color.parseColor(color));
                                     Username_txt.setText(usernameOfDriver);
-                                    Age_txt.setTextColor(Color.parseColor(color));
                                     Age_txt.setText(dateN);
-                                    stars.getDrawable(2).setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
                                     Point_rb.setRating(pt);
                                     Color_iv.setBackgroundColor(Color.parseColor(color));
-                                    Model_txt.setTextColor(Color.parseColor(color));
                                     Model_txt.setText(model);
-                                    Serial_txt.setTextColor(Color.parseColor(color));
                                     Serial_txt.setText(serial);
-                                    Places_txt.setTextColor(Color.parseColor(color));
                                     Places_txt.setText(places);
-                                    Luggages_txt.setTextColor(Color.parseColor(color));
                                     Luggages_txt.setText(luggages);
                                 }
                             }catch (JSONException e) {
@@ -301,20 +298,13 @@ public class BookNow extends Fragment implements LocationListener {
                         if (tokenDriverExist) {
                             byte[] imageAsBytes = Base64.decode(listPreTaxi.get(positionDriver).getPicture().getBytes(), Base64.DEFAULT);
                             Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                            Username_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Username_txt.setText(listPreTaxi.get(positionDriver).getUsername());
-                            Age_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Age_txt.setText(listPreTaxi.get(positionDriver).getDateN());
-                            stars.getDrawable(2).setColorFilter(Color.parseColor(listPreTaxi.get(positionDriver).getColor()), PorterDuff.Mode.SRC_ATOP);
                             Point_rb.setRating(listPreTaxi.get(positionDriver).getPt());
                             Color_iv.setBackgroundColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
-                            Model_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Model_txt.setText(listPreTaxi.get(positionDriver).getModel());
-                            Serial_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Serial_txt.setText(listPreTaxi.get(positionDriver).getSerial());
-                            Places_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Places_txt.setText(listPreTaxi.get(positionDriver).getPlaces());
-                            Luggages_txt.setTextColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Luggages_txt.setText(listPreTaxi.get(positionDriver).getLuggages());
                         } else {
                             List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -343,20 +333,13 @@ public class BookNow extends Fragment implements LocationListener {
 
                                         byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
                                         Picture_iv.setImageBitmap(BitmapFactory.decodeByteArray(imageAsBytes, 0, imageAsBytes.length));
-                                        Username_txt.setTextColor(Color.parseColor(color));
                                         Username_txt.setText(usernameOfDriver);
-                                        Age_txt.setTextColor(Color.parseColor(color));
                                         Age_txt.setText(dateN);
-                                        stars.getDrawable(2).setColorFilter(Color.parseColor(color), PorterDuff.Mode.SRC_ATOP);
                                         Point_rb.setRating(pt);
                                         Color_iv.setBackgroundColor(Color.parseColor(color));
-                                        Model_txt.setTextColor(Color.parseColor(color));
                                         Model_txt.setText(model);
-                                        Serial_txt.setTextColor(Color.parseColor(color));
                                         Serial_txt.setText(serial);
-                                        Places_txt.setTextColor(Color.parseColor(color));
                                         Places_txt.setText(places);
-                                        Luggages_txt.setTextColor(Color.parseColor(color));
                                         Luggages_txt.setText(luggages);
                                     }
                                 }catch (JSONException e) {
@@ -406,7 +389,7 @@ public class BookNow extends Fragment implements LocationListener {
                     if (ioEndCourse) {
                         ioPreBook = false; ioValid = false; ioPostBook = false;
                         JSONObject data = (JSONObject) args[0];
-                        Double pcourse, ptake, preturn;
+                        double pcourse, ptake, preturn;
                         String token;
                         try {
                             idBook = data.getString(conf.tag_id);
@@ -505,7 +488,7 @@ public class BookNow extends Fragment implements LocationListener {
                     if (ioPostBook) {
                         ioPreBook = false; ioValid = false;
                         JSONObject data = (JSONObject) args[0];
-                        Double origLat, origLon, desLat, desLon;
+                        double origLat, origLon, desLat, desLon;
                         String token;
                         try {
                             origLat = data.getDouble(conf.tag_originLatitude);
@@ -545,7 +528,7 @@ public class BookNow extends Fragment implements LocationListener {
                     if (ioPostBook) {
                         ioPreBook = false; ioValid = false;
                         JSONObject data = (JSONObject) args[0];
-                        Double lat, lon;
+                        double lat, lon;
                         String token;
                         try {
                             lat = data.getDouble(conf.tag_latitude);
@@ -582,7 +565,7 @@ public class BookNow extends Fragment implements LocationListener {
                 public void run() {
                     if (ioValid) {
                         JSONObject data = (JSONObject) args[0];
-                        Double lat, lon;
+                        double lat, lon;
                         String token;
                         try {
                             lat = data.getDouble(conf.tag_latitude);
@@ -618,7 +601,7 @@ public class BookNow extends Fragment implements LocationListener {
                 public void run() {
                     if (ioPreBook) {
                         JSONObject data = (JSONObject) args[0];
-                        Double lat, lon;
+                        double lat, lon;
                         String token, socket;
                         Boolean working;
                         try {
@@ -629,12 +612,14 @@ public class BookNow extends Fragment implements LocationListener {
                             working = data.getBoolean(conf.tag_working);
                             if (working) {
                                 if (listTaxi.isEmpty()) {
-                                    MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
-                                            .title(token)
-                                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                    Marker m = googleMap.addMarker(a);
-                                    TaxiPosition t = new TaxiPosition(token, socket, lat, lon, m);
-                                    listTaxi.add(t);
+                                    if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                        MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
+                                                .title(token)
+                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                        Marker m = googleMap.addMarker(a);
+                                        TaxiPosition t = new TaxiPosition(token, socket, lat, lon, m);
+                                        listTaxi.add(t);
+                                    }
                                 } else {
                                     boolean existTaxi = false;
                                     int position = 0;
@@ -648,16 +633,23 @@ public class BookNow extends Fragment implements LocationListener {
                                         }
                                     }
                                     if (existTaxi) {
-                                        listTaxi.get(position).getMarker().setPosition(new LatLng(lat, lon));
-                                        listTaxi.get(position).setLatitude(lat);
-                                        listTaxi.get(position).setLongitude(lon);
+                                        if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                            listTaxi.get(position).getMarker().setPosition(new LatLng(lat, lon));
+                                            listTaxi.get(position).setLatitude(lat);
+                                            listTaxi.get(position).setLongitude(lon);
+                                        } else {
+                                            listTaxi.get(position).getMarker().remove();
+                                            listTaxi.remove(position);
+                                        }
                                     } else {
-                                        MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
-                                                .title(token)
-                                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                                        Marker m = googleMap.addMarker(a);
-                                        TaxiPosition t = new TaxiPosition(token, socket, lat, lon, m);
-                                        listTaxi.add(t);
+                                        if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                            MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
+                                                    .title(token)
+                                                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                                            Marker m = googleMap.addMarker(a);
+                                            TaxiPosition t = new TaxiPosition(token, socket, lat, lon, m);
+                                            listTaxi.add(t);
+                                        }
                                     }
                                 }
                             } else {
@@ -889,6 +881,22 @@ public class BookNow extends Fragment implements LocationListener {
             longitude = location.getLongitude();
         }
         return longitude;
+    }
+
+    public static double getDistance(double lat1, double lon1, double lat2, double lon2) {
+        //double el1, double el2
+        final int R = 6371; // Radius of the earth
+        Double latDistance = Math.toRadians(lat2 - lat1);
+        Double lonDistance = Math.toRadians(lon2 - lon1);
+        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = R * c * 1000; // convert to meters
+        //double height = el1 - el2;
+        //distance = Math.pow(distance, 2) + Math.pow(height, 2);
+        //return Math.sqrt(distance);
+        return distance;
     }
 
     //Function to check GPS/wifi enabled
