@@ -221,7 +221,7 @@ public class BookNow extends Fragment implements LocationListener {
                     bookDialog = new Dialog(getActivity(), R.style.FullHeightDialog);
                     bookDialog.setContentView(R.layout.booknow_dialog);
                     bookDialog.setCancelable(true);
-                    ImageView Picture_iv, Color_iv;
+                    ImageView Picture_iv;
                     TextView Username_txt, Age_txt, Model_txt, Serial_txt, Places_txt, Luggages_txt;
                     RatingBar Point_rb;
                     Button Book_btn, Cancel_btn;
@@ -233,7 +233,7 @@ public class BookNow extends Fragment implements LocationListener {
                     stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
                     stars.getDrawable(1).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
                     stars.getDrawable(0).setColorFilter(getResources().getColor(R.color.blue), PorterDuff.Mode.SRC_ATOP);
-                    Color_iv = (ImageView) bookDialog.findViewById(R.id.color_iv);
+
                     Model_txt = (TextView) bookDialog.findViewById(R.id.model_txt);
                     Serial_txt = (TextView) bookDialog.findViewById(R.id.serial_txt);
                     Places_txt = (TextView) bookDialog.findViewById(R.id.places_txt);
@@ -253,7 +253,7 @@ public class BookNow extends Fragment implements LocationListener {
                                     String newKey = algo.key(keyVirtual);
 
                                     String picture = json.getString(conf.tag_picture);
-                                    String color = algo.enc2dec(json.getString(conf.tag_color), newKey);
+
                                     usernameOfDriver = algo.enc2dec(json.getString(conf.tag_fname), newKey)
                                             + " " + algo.enc2dec(json.getString(conf.tag_lname), newKey);
                                     int[] tab = new Calculator().getAge(algo.enc2dec(json.getString(conf.tag_dateN), newKey));
@@ -263,7 +263,7 @@ public class BookNow extends Fragment implements LocationListener {
                                     String serial = algo.enc2dec(json.getString(conf.tag_serial), newKey);
                                     String places = algo.enc2dec(json.getString(conf.tag_places), newKey) + " Places,";
                                     String luggages = algo.enc2dec(json.getString(conf.tag_luggages), newKey) + " Kg Luggages";
-                                    Taxi tx = new Taxi(tokenOfDriver,picture,color,usernameOfDriver,dateN,pt,model,serial,places,luggages);
+                                    Taxi tx = new Taxi(tokenOfDriver,picture,usernameOfDriver,dateN,pt,model,serial,places,luggages);
                                     listPreTaxi.add(tx);
 
                                     byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
@@ -271,7 +271,6 @@ public class BookNow extends Fragment implements LocationListener {
                                     Username_txt.setText(usernameOfDriver);
                                     Age_txt.setText(dateN);
                                     Point_rb.setRating(pt);
-                                    Color_iv.setBackgroundColor(Color.parseColor(color));
                                     Model_txt.setText(model);
                                     Serial_txt.setText(serial);
                                     Places_txt.setText(places);
@@ -301,7 +300,6 @@ public class BookNow extends Fragment implements LocationListener {
                             Username_txt.setText(listPreTaxi.get(positionDriver).getUsername());
                             Age_txt.setText(listPreTaxi.get(positionDriver).getDateN());
                             Point_rb.setRating(listPreTaxi.get(positionDriver).getPt());
-                            Color_iv.setBackgroundColor(Color.parseColor(listPreTaxi.get(positionDriver).getColor()));
                             Model_txt.setText(listPreTaxi.get(positionDriver).getModel());
                             Serial_txt.setText(listPreTaxi.get(positionDriver).getSerial());
                             Places_txt.setText(listPreTaxi.get(positionDriver).getPlaces());
@@ -318,7 +316,6 @@ public class BookNow extends Fragment implements LocationListener {
                                         String newKey = algo.key(keyVirtual);
 
                                         String picture = json.getString(conf.tag_picture);
-                                        String color = algo.enc2dec(json.getString(conf.tag_color), newKey);
                                         usernameOfDriver = algo.enc2dec(json.getString(conf.tag_fname), newKey)
                                                 + " " + algo.enc2dec(json.getString(conf.tag_lname), newKey);
                                         int[] tab = new Calculator().getAge(algo.enc2dec(json.getString(conf.tag_dateN), newKey));
@@ -328,7 +325,7 @@ public class BookNow extends Fragment implements LocationListener {
                                         String serial = algo.enc2dec(json.getString(conf.tag_serial), newKey);
                                         String places = algo.enc2dec(json.getString(conf.tag_places), newKey) + " Places,";
                                         String luggages = algo.enc2dec(json.getString(conf.tag_luggages), newKey) + " Kg Luggages";
-                                        Taxi tx = new Taxi(tokenOfDriver,picture,color,usernameOfDriver,dateN,pt,model,serial,places,luggages);
+                                        Taxi tx = new Taxi(tokenOfDriver,picture,usernameOfDriver,dateN,pt,model,serial,places,luggages);
                                         listPreTaxi.add(tx);
 
                                         byte[] imageAsBytes = Base64.decode(picture.getBytes(), Base64.DEFAULT);
@@ -336,7 +333,6 @@ public class BookNow extends Fragment implements LocationListener {
                                         Username_txt.setText(usernameOfDriver);
                                         Age_txt.setText(dateN);
                                         Point_rb.setRating(pt);
-                                        Color_iv.setBackgroundColor(Color.parseColor(color));
                                         Model_txt.setText(model);
                                         Serial_txt.setText(serial);
                                         Places_txt.setText(places);

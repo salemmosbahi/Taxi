@@ -6,7 +6,6 @@ package it.mahd.taxi.database;
 public class Taxi {
     private String token;
     private String picture;
-    private String color;
     private String username;
     private String dateN;
     private Float pt;
@@ -15,10 +14,9 @@ public class Taxi {
     private String places;
     private String luggages;
 
-    public Taxi(String token, String picture, String color, String username, String dateN, Float pt, String model, String serial, String places, String luggages) {
+    public Taxi(String token, String picture, String username, String dateN, Float pt, String model, String serial, String places, String luggages) {
         this.token = token;
         this.picture = picture;
-        this.color = color;
         this.username = username;
         this.dateN = dateN;
         this.pt = pt;
@@ -34,10 +32,6 @@ public class Taxi {
 
     public String getPicture() {
         return picture;
-    }
-
-    public String getColor() {
-        return color;
     }
 
     public String getUsername() {
@@ -74,10 +68,6 @@ public class Taxi {
 
     public void setPicture(String picture) {
         this.picture = picture;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
     }
 
     public void setUsername(String username) {
