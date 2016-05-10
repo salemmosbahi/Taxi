@@ -630,7 +630,7 @@ public class BookNow extends Fragment implements LocationListener {
                                         }
                                     }
                                     if (existTaxi) {
-                                        if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                        if (getDistance(lat,lon,latitude,longitude) <= 1000) {
                                             listTaxi.get(position).getMarker().setPosition(new LatLng(lat, lon));
                                             listTaxi.get(position).setLatitude(lat);
                                             listTaxi.get(position).setLongitude(lon);
