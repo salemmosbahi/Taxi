@@ -7,13 +7,14 @@ public class ReclamationDB {
     private String id;
     private String subject;
     private String date;
-    private Boolean status;
+    private Boolean status, me;
 
-    public ReclamationDB(String id, String subject, String date, Boolean status) {
+    public ReclamationDB(String id, String subject, String date, Boolean status, Boolean me) {
         this.id = id;
         this.subject = subject;
         this.date = date;
         this.status = status;
+        this.me = me;
     }
 
     public String getId() {
@@ -46,5 +47,13 @@ public class ReclamationDB {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public Boolean getMe() {
+        return me;
+    }
+
+    public void setMe(Boolean me) {
+        this.me = me;
     }
 }

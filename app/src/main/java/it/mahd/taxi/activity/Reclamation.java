@@ -93,7 +93,8 @@ public class Reclamation extends Fragment implements SwipeRefreshLayout.OnRefres
                             String subject = c.getString(conf.tag_subject);
                             String date = c.getString(conf.tag_date);
                             Boolean status = c.getBoolean(conf.tag_status);
-                            ReclamationDB rec = new ReclamationDB(id, subject, date, status);
+                            Boolean me = c.getBoolean(conf.tag_me);
+                            ReclamationDB rec = new ReclamationDB(id, subject, date, status, me);
                             reclamationDBListx.add(rec);
                         }
                     }

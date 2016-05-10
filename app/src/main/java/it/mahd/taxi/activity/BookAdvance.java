@@ -2,6 +2,8 @@ package it.mahd.taxi.activity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TextInputLayout;
@@ -47,6 +49,7 @@ import it.mahd.taxi.util.SocketIO;
  * Created by salem on 2/13/16.
  */
 public class BookAdvance extends Fragment {
+    SharedPreferences pref;
     Calculator c = new Calculator();
     Controllers conf = new Controllers();
     ServerRequest sr = new ServerRequest();
@@ -76,6 +79,7 @@ public class BookAdvance extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.bookadvance, container, false);
+        pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
         socket.connect();
         latitude = getArguments().getDouble(conf.tag_latitude);
         longitude = getArguments().getDouble(conf.tag_longitude);
@@ -252,6 +256,8 @@ public class BookAdvance extends Fragment {
         int x = algo.keyVirtual();
         String key = algo.key(x);
         List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair(conf.tag_token, pref.getString(conf.tag_token, "")));
+        params.add(new BasicNameValuePair(conf.tag_username, algo.dec2enc(pref.getString(conf.tag_fname, "") + " " + pref.getString(conf.tag_lname, ""), key)));
         params.add(new BasicNameValuePair(conf.tag_date, algo.dec2enc(datetime, key)));
         params.add(new BasicNameValuePair(conf.tag_latitude, algo.dec2enc(latitude + "", key)));
         params.add(new BasicNameValuePair(conf.tag_longitude, algo.dec2enc(longitude + "", key)));

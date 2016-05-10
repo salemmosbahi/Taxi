@@ -608,7 +608,8 @@ public class BookNow extends Fragment implements LocationListener {
                             working = data.getBoolean(conf.tag_working);
                             if (working) {
                                 if (listTaxi.isEmpty()) {
-                                    if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                    //if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
+                                    if (getDistance(lat,lon,latitude,longitude) <= 1000) {
                                         MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
                                                 .title(token)
                                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));

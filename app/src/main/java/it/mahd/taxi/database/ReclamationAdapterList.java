@@ -60,7 +60,7 @@ public class ReclamationAdapterList extends BaseAdapter {
         }
         holder.Subject_txt.setText(data.get(position).getSubject());
         holder.Date_txt.setText(data.get(position).getDate());
-        if (data.get(position).getStatus()) {
+        if (data.get(position).getStatus() && !data.get(position).getMe()) {
             holder.Subject_txt.setTypeface(null, Typeface.BOLD_ITALIC);
             holder.Date_txt.setTypeface(null, Typeface.BOLD_ITALIC);
         }
