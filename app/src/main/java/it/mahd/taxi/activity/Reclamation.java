@@ -66,7 +66,6 @@ public class Reclamation extends Fragment implements SwipeRefreshLayout.OnRefres
                 ft.replace(R.id.container_body, new ReclamationAdd());
                 ft.addToBackStack(null);
                 ft.commit();
-                ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.reclamation_new));
             }
         });
         return rootView;
@@ -122,7 +121,6 @@ public class Reclamation extends Fragment implements SwipeRefreshLayout.OnRefres
         ft.replace(R.id.container_body, new Home());
         ft.addToBackStack(null);
         ft.commit();
-        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.home));
     }
 
     @Override
