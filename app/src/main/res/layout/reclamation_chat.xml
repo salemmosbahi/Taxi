@@ -51,6 +51,5 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:src="@android:drawable/ic_menu_send" />
-
     </LinearLayout>
 </LinearLayout>
