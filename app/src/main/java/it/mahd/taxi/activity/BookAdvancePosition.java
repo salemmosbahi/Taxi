@@ -90,12 +90,13 @@ public class BookAdvancePosition extends Fragment {
         }
 
         googleMap = mMapView.getMap();
+        googleMap.setMyLocationEnabled(true);
         googleMap.getUiSettings().setZoomControlsEnabled(true);
         getLocation();
         if(canGetLocation()){
             latitude = getLatitude();
             longitude = getLongitude();
-        }else{
+        } else {
             latitude = 0;
             longitude = 0;
         }

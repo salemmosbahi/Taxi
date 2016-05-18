@@ -53,7 +53,7 @@ public class Profile extends Fragment {
     private EditText Phone_etxt;
     private LinearLayout Age_ll, Phone_ll;
     private ImageView Picture_iv;
-    private Button Logout_btn;
+    private Button Logout_btn, Disable_btn;
     private FloatingActionButton Age_btn, Phone_btn;
 
     private String fname, lname, gender, dateN, country, city, email, phone, picture;
@@ -135,6 +135,17 @@ public class Profile extends Fragment {
 
         Picture_iv = (ImageView) rootView.findViewById(R.id.picture_iv);
 
+        Disable_btn = (Button) rootView.findViewById(R.id.Disable_btn);
+        Disable_btn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if(conf.NetworkIsAvailable(getActivity())){
+                    disableFunct();
+                }else{
+                    Toast.makeText(getActivity(), R.string.networkunvalid, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
         Logout_btn = (Button) rootView.findViewById(R.id.logout_btn);
         Logout_btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -153,6 +164,42 @@ public class Profile extends Fragment {
         }
 
         return rootView;
+    }
+
+    public void disableFunct() {
+        Encrypt algo = new Encrypt();
+        int x = algo.keyVirtual();
+        String key = algo.key(x);
+        List<NameValuePair> params = new ArrayList<NameValuePair>();
+        params.add(new BasicNameValuePair("app", algo.dec2enc(conf.app, key)));
+        params.add(new BasicNameValuePair(conf.tag_key, x + ""));
+        params.add(new BasicNameValuePair(conf.tag_token, pref.getString(conf.tag_token, "")));
+        JSONObject json = sr.getJSON(conf.url_disableAccount, params);
+        if (json != null) {
+            try {
+                if(json.getBoolean("res")){
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString(conf.tag_token, "");
+                    edit.putString(conf.tag_fname, "");
+                    edit.putString(conf.tag_lname, "");
+                    edit.putString(conf.tag_picture, "");
+                    edit.commit();
+
+                    RelativeLayout rl = (RelativeLayout) getActivity().findViewById(R.id.nav_header_container);
+                    LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    View vi = inflater.inflate(R.layout.toolnav_drawer, null);
+                    TextView tv = (TextView) vi.findViewById(R.id.usernameTool_txt);
+                    tv.setText("");
+                    rl.addView(vi);
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.replace(R.id.container_body, new Home());
+                    ft.commit();
+                }
+            }catch(JSONException e){
+                e.printStackTrace();
+            }
+        }
     }
 
     private void editAge() {
@@ -284,7 +331,6 @@ public class Profile extends Fragment {
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Home());
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.home));
                 }
             }catch(JSONException e){
                 e.printStackTrace();

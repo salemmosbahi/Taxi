@@ -49,6 +49,7 @@
     <string name="book">Book</string>
     <string name="cancel">Cancel</string>
     <string name="valid">Valid</string>
+    <string name="disable">Disable</string>
 
     <string-array name="nav_drawer_labels">
         <item>@string/home</item>
