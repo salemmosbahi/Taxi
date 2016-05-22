@@ -126,6 +126,7 @@ public class BookNow extends Fragment implements LocationListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.booknow, container, false);
+        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.now));
         pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
         socket.connect();
         ioPreBook = true;
@@ -208,7 +209,6 @@ public class BookNow extends Fragment implements LocationListener {
                     ft.replace(R.id.container_body, new Home());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
                 } catch (JSONException e) { }
             }
         });
@@ -436,7 +436,6 @@ public class BookNow extends Fragment implements LocationListener {
                                                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                                                     ft.replace(R.id.container_body, new Home());
                                                     ft.commit();
-                                                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.home));
                                                 }
                                             }catch(JSONException e){
                                                 e.printStackTrace();
@@ -608,7 +607,6 @@ public class BookNow extends Fragment implements LocationListener {
                             working = data.getBoolean(conf.tag_working);
                             if (working) {
                                 if (listTaxi.isEmpty()) {
-                                    //if (getDistance(lat,lon,location.getLatitude(),location.getLongitude()) <= 1000) {
                                     if (getDistance(lat,lon,latitude,longitude) <= 1000) {
                                         MarkerOptions a = new MarkerOptions().position(new LatLng(lat, lon))
                                                 .title(token)
@@ -679,7 +677,6 @@ public class BookNow extends Fragment implements LocationListener {
                     ft.replace(R.id.container_body, new Home());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -971,7 +968,6 @@ public class BookNow extends Fragment implements LocationListener {
         ft.replace(R.id.container_body, new Home());
         ft.addToBackStack(null);
         ft.commit();
-        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.home));
     }
 
     @Override

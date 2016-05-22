@@ -10,11 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import it.mahd.taxi.Main;
 import it.mahd.taxi.R;
-import it.mahd.taxi.database.Notify;
 import it.mahd.taxi.util.Controllers;
 
 /**
@@ -34,10 +32,9 @@ public class Home extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.home, container, false);
-        pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
+        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.app_name));
 
-        //socket
-        //new Notify().reclamationNotify(Home.this);
+        pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
 
         Button Now_btn = (Button) rootView.findViewById(R.id.btn_now);
         Now_btn.setOnClickListener(new View.OnClickListener() {
@@ -48,13 +45,11 @@ public class Home extends Fragment {
                     ft.replace(R.id.container_body, new Login());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
                 }else{
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new BookNow());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.now));
                 }
             }
         });
@@ -67,7 +62,6 @@ public class Home extends Fragment {
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Login());
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
                 }else{
                     Fragment fr = new BookAdvance();
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -78,7 +72,6 @@ public class Home extends Fragment {
                     ft.replace(R.id.container_body, fr);
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.advance));
                 }
             }
         });
@@ -91,13 +84,11 @@ public class Home extends Fragment {
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Login());
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
                 }else{
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Reclamation());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.reclamation));
                 }
             }
         });
@@ -110,13 +101,11 @@ public class Home extends Fragment {
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Login());
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
                 }else{
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
                     ft.replace(R.id.container_body, new Profile());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.profile));
                 }
             }
         });
@@ -132,5 +121,6 @@ public class Home extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         getActivity().finish();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

@@ -78,6 +78,7 @@ public class BookAdvancePosition extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.booknow, container, false);
+        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.advance));
 
         mMapView = (MapView) v.findViewById(R.id.mapView);
         mMapView.onCreate(savedInstanceState);
@@ -237,7 +238,6 @@ public class BookAdvancePosition extends Fragment {
         ft.replace(R.id.container_body, fr);
         ft.addToBackStack(null);
         ft.commit();
-        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.advance));
     }
 
     @Override

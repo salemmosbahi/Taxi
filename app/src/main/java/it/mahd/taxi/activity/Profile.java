@@ -1,6 +1,7 @@
 package it.mahd.taxi.activity;
 
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
@@ -55,6 +56,7 @@ public class Profile extends Fragment {
     private ImageView Picture_iv;
     private Button Logout_btn, Disable_btn;
     private FloatingActionButton Age_btn, Phone_btn;
+    private static Dialog disableDialog;
 
     private String fname, lname, gender, dateN, country, city, email, phone, picture;
 
@@ -69,6 +71,7 @@ public class Profile extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.profile, container, false);
+        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.profile));
 
         pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
 
@@ -138,11 +141,30 @@ public class Profile extends Fragment {
         Disable_btn = (Button) rootView.findViewById(R.id.Disable_btn);
         Disable_btn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                if(conf.NetworkIsAvailable(getActivity())){
-                    disableFunct();
-                }else{
-                    Toast.makeText(getActivity(), R.string.networkunvalid, Toast.LENGTH_SHORT).show();
-                }
+                disableDialog = new Dialog(getActivity(), R.style.FullHeightDialog);
+                disableDialog.setContentView(R.layout.profile_dialog);
+                disableDialog.setCancelable(true);
+                final EditText Password_etxt;
+                Button Disablex_btn, Cancel_btn;
+                Password_etxt = (EditText) disableDialog.findViewById(R.id.Password_etxt);
+                Disablex_btn = (Button) disableDialog.findViewById(R.id.Disablex_btn);
+                Cancel_btn = (Button) disableDialog.findViewById(R.id.Cancel_btn);
+                disableDialog.show();
+                Cancel_btn.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        disableDialog.dismiss();
+                    }
+                });
+                Disablex_btn.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        disableDialog.dismiss();
+                        if(conf.NetworkIsAvailable(getActivity())){
+                            disableFunct(Password_etxt.getText().toString());
+                        }else{
+                            Toast.makeText(getActivity(), R.string.networkunvalid, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
 
@@ -166,7 +188,7 @@ public class Profile extends Fragment {
         return rootView;
     }
 
-    public void disableFunct() {
+    public void disableFunct(String pwd) {
         Encrypt algo = new Encrypt();
         int x = algo.keyVirtual();
         String key = algo.key(x);

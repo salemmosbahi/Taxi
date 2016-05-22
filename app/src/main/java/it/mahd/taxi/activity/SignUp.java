@@ -94,6 +94,7 @@ public class SignUp extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.signup, container, false);
+        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.sign_up));
 
         pref = getActivity().getSharedPreferences(conf.app, Context.MODE_PRIVATE);
         Fname_input = (TextInputLayout) rootView.findViewById(R.id.input_fname);
@@ -239,7 +240,6 @@ public class SignUp extends Fragment {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.replace(R.id.container_body, new Login());
         ft.commit();
-        ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
     }
 
     private void submitForm() {
@@ -278,7 +278,6 @@ public class SignUp extends Fragment {
                     ft.replace(R.id.container_body, new Login());
                     ft.addToBackStack(null);
                     ft.commit();
-                    ((Main) getActivity()).getSupportActionBar().setTitle(getString(R.string.login));
                 }
             }catch(JSONException e){
                 e.printStackTrace();
